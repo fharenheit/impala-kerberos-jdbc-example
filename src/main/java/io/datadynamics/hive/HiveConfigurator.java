@@ -13,6 +13,16 @@ import java.io.IOException;
 
 public class HiveConfigurator {
 
+    /**
+     * Loads a HiveConf configuration from a set of configuration files.
+     * Each file path in the provided input is processed and loaded into the
+     * HiveConf instance.
+     *
+     * @param configFiles Comma-separated list of configuration file paths.
+     *                    Each file is expected to be a valid Hadoop configuration resource.
+     *                    If the input is blank or null, no files are loaded.
+     * @return A HiveConf instance populated with settings from the specified configuration files.
+     */
     public HiveConf getConfigurationFromFiles(final String configFiles) {
         final HiveConf hiveConfig = new HiveConf();
         if (StringUtils.isNotBlank(configFiles)) {
@@ -23,6 +33,17 @@ public class HiveConfigurator {
         return hiveConfig;
     }
 
+    /**
+     * Preloads the given Hadoop {@link Configuration} by initializing necessary resources
+     * and setting the configuration to the security context.
+     * This method ensures that the {@link FileSystem} and {@link UserGroupInformation}
+     * are properly configured for the provided configuration to prevent potential issues
+     * during its usage.
+     *
+     * @param configuration The Hadoop configuration object to preload. This configuration
+     *                      will be set to the {@link UserGroupInformation} and the associated
+     *                      {@link FileSystem} resources will be initialized and closed.
+     */
     public void preload(Configuration configuration) {
         try {
             FileSystem.get(configuration).close();
@@ -47,47 +68,5 @@ public class HiveConfigurator {
         } catch (IOException ioe) {
             throw new AuthenticationFailedException("Kerberos Authentication for Hive failed", ioe);
         }
-    }
-
-    /**
-     * As of Apache NiFi 1.5.0, due to changes made to
-     * {@link SecurityUtil#loginKerberos(Configuration, String, String)}, which is used by this
-     * class to authenticate a principal with Kerberos, Hive controller services no longer
-     * attempt relogins explicitly.  For more information, please read the documentation for
-     * {@link SecurityUtil#loginKerberos(Configuration, String, String)}.
-     * <p/>
-     * In previous versions of NiFi, a {@link org.apache.nifi.hadoop.KerberosTicketRenewer} was started by
-     * {@link HiveConfigurator#authenticate(Configuration, String, String, long)} when the Hive
-     * controller service was enabled.  The use of a separate thread to explicitly relogin could cause race conditions
-     * with the implicit relogin attempts made by hadoop/Hive code on a thread that references the same
-     * {@link UserGroupInformation} instance.  One of these threads could leave the
-     * {@link javax.security.auth.Subject} in {@link UserGroupInformation} to be cleared or in an unexpected state
-     * while the other thread is attempting to use the {@link javax.security.auth.Subject}, resulting in failed
-     * authentication attempts that would leave the Hive controller service in an unrecoverable state.
-     *
-     * @see SecurityUtil#loginKerberos(Configuration, String, String)
-     * @deprecated Use {@link SecurityUtil#getUgiForKerberosUser(Configuration, KerberosUser)}
-     */
-    @Deprecated
-    public UserGroupInformation authenticate(final Configuration hiveConfig, String principal, String keyTab) throws AuthenticationFailedException {
-        UserGroupInformation ugi;
-        try {
-            ugi = SecurityUtil.loginKerberos(hiveConfig, principal, keyTab);
-        } catch (IOException ioe) {
-            throw new AuthenticationFailedException("Kerberos Authentication for Hive failed", ioe);
-        }
-        return ugi;
-    }
-
-    /**
-     * As of Apache NiFi 1.5.0, this method has been deprecated and is now a wrapper
-     * method which invokes {@link HiveConfigurator#authenticate(Configuration, String, String)}. It will no longer start a
-     * {@link org.apache.nifi.hadoop.KerberosTicketRenewer} to perform explicit relogins.
-     *
-     * @see HiveConfigurator#authenticate(Configuration, String, String)
-     */
-    @Deprecated
-    public UserGroupInformation authenticate(final Configuration hiveConfig, String principal, String keyTab, long ticketRenewalPeriod) throws AuthenticationFailedException {
-        return authenticate(hiveConfig, principal, keyTab);
     }
 }
