@@ -1,6 +1,6 @@
-# Impala JDBC Test
+# Hive, Impala, HDFS의 Kerberos Client
 
-이 코드를 실행하기 위해서 Cloudera 에서 [Impala JDBC Download](https://www.cloudera.com/downloads/connectors/impala/jdbc/2-6-32.html) 다운로드 하도록 합니다.
+Kerberos가 enable되어 있는 Hadoop Cluster에서 Hive, Impala, HDFS를 호출하는 클라이언트 테스트 코드.
 
 ## Build
 
