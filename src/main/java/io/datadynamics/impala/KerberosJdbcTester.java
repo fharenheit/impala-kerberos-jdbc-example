@@ -9,7 +9,7 @@ import java.sql.*;
 public class KerberosJdbcTester {
 
     public static void main(String[] args) throws SQLException {
-        KerberosKeytabUser kerberosKeytabUser = new KerberosKeytabUser("honggildong", "/home/honggildong/impala.keytab");
+        KerberosKeytabUser kerberosKeytabUser = new KerberosKeytabUser("cloudera@DATALAKE.NET", "/opt/cloudera/security/cloudera.keytab");
 
         DataSource ds = new DataSource();
         ds.setURL(DataSourceUtils.getUrl("coor1.datalake.net", "21050"));
