@@ -109,12 +109,9 @@
 
     <repositories>
         <repository>
-            <id>opencloudengine-public</id>
+            <id>opencloudengine</id>
+            <name>OpenCloudEngine</name>
             <url>http://nexus.opencloudengine.org/repository/maven-public/</url>
-        </repository>
-        <repository>
-            <id>opencloudengine-release</id>
-            <url>http://nexus.opencloudengine.org/repository/maven-releases/</url>
         </repository>
     </repositories>
 </project>
