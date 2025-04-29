@@ -12,7 +12,7 @@ public class KerberosJdbcTester {
         KerberosKeytabUser kerberosKeytabUser = new KerberosKeytabUser("cloudera@DATALAKE.NET", "/opt/cloudera/security/cloudera.keytab");
 
         DataSource ds = new DataSource();
-        ds.setURL(DataSourceUtils.getUrl("coor1.datalake.net", "21050"));
+        ds.setURL(DataSourceUtils.getUrl("coor1.datalake.net", "21050", "DATALAKE.NET", "impala"));
 
         KerberosAction<Connection> kerberosAction = new KerberosAction<>(kerberosKeytabUser, ds::getConnection);
         Connection conn = kerberosAction.execute();

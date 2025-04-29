@@ -8,15 +8,10 @@ import java.util.stream.Collectors;
 
 public class DataSourceUtils {
 
-    public static final String DRIVER_CLASS_NAME = "com.cloudera.impala.jdbc.Driver";
-    public static final String IMPALA_SCHEME = "jdbc:impala";
-    public static final String IMPALA_HOST_PORT_SCHEMA_URI_TEMPLATE = "jdbc:impala://%s:%s/%s";
-    public static final String IMPALA_HOST_PORT_URI_TEMPLATE = "jdbc:impala://%s:%s";
-
-    public static String getUrl(String hostname, String port) {
+    public static String getUrl(String hostname, String port, String krbRealm, String krbServiceName) {
         String schemaName = "default";
         Map<String, String> urlProperties = new LinkedHashMap<>();
-        urlProperties.putAll(getAuthenticationSettings("1", "sasl", hostname, "DATALAKE.NET", "impala"));
+        urlProperties.putAll(getAuthenticationSettings("1", "sasl", hostname, krbRealm, krbServiceName));
         String additionalParameters = urlProperties.entrySet().stream().map(entry -> String.format(";%s=%s", new Object[]{entry.getKey(), entry.getValue()})).collect(Collectors.joining());
         if (StringUtils.isNoneBlank(new CharSequence[]{schemaName, hostname, port}))
             return String.format("jdbc:impala://%s:%s/%s", new Object[]{hostname, port, schemaName}) + additionalParameters;
